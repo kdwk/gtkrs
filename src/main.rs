@@ -1,4 +1,4 @@
-use relm4::{prelude::*, gtk::{traits::{GtkWindowExt, BoxExt, ButtonExt}, glib::clone}};
+use relm4::{prelude::*, gtk::{traits::{GtkWindowExt, BoxExt, ButtonExt}, glib::clone}, adw::prelude::*};
 
 #[derive(Debug)]
 enum AppInput {
@@ -26,7 +26,7 @@ impl SimpleComponent for AppModel {
     /// A data structure that contains the widgets that you will need to update.
     type Widgets = AppWidgets;
     fn init_root() -> Self::Root {
-        gtk::Window::builder()
+        adw::Window::builder()
             .title("Counter")
             .default_height(700)
             .default_width(650)
