@@ -11,10 +11,6 @@ struct AppModel {
     counter: isize,
 }
 
-struct AppWidgets {
-    label: gtk::Label,
-}
-
 #[relm4::component]
 impl SimpleComponent for AppModel {
     /// The type of the messages that this component can receive.
@@ -72,7 +68,7 @@ impl SimpleComponent for AppModel {
         ComponentParts { model: model, widgets: widgets }
     }
 
-    fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
+    fn update(&mut self, message: Self::Input, _sender: ComponentSender<Self>) {
         match message {
             AppInput::Increment => {
                 self.counter += 1;
