@@ -1,86 +1,76 @@
-use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, OrientableExt};
-use relm4::{gtk::{self, traits::WidgetExt}, adw::Window as Window, ComponentParts, ComponentSender, RelmApp, RelmWidgetExt, SimpleComponent};
+use gtk::prelude::*;
+use relm4::{gtk::{self, traits::WidgetExt}, ComponentParts, ComponentSender, RelmApp, RelmWidgetExt, SimpleComponent, set_global_css};
+use relm4::adw::{Application, ApplicationWindow, Window, ToastOverlay, Toast};
+use tracker;
+
+const ICON_LIST: &[&str] = &[
+    "bookmark-new-symbolic",
+    "edit-copy-symbolic",
+    "edit-cut-symbolic",
+    "edit-find-symbolic",
+    "starred-symbolic",
+    "system-run-symbolic",
+    "emoji-objects-symbolic",
+    "emoji-nature-symbolic",
+    "display-brightness-symbolic",
+];
+
+fn random_icon() -> &'static str {
+    ICON_LIST.iter().choose().expect("Could not choose a random icon")
+}
 
 #[derive(Debug)]
 enum AppInput {
-    Increment,
-    Decrement,
+    Change_1,
+    Change_2,
 }
 
+#[tracker::track]
 struct AppModel {
-    counter: isize,
+    icon1: &str,
+    icon2: &str,
+    identical: bool,
 }
 
-#[relm4::component]
 impl SimpleComponent for AppModel {
-    /// The type of the messages that this component can receive.
     type Input = AppInput;
-    /// The type of the messages that this component can send.
     type Output = ();
-    /// The type of data with which this component will be initialized.
-    type Init = isize;
+    type Init = &str;
 
     view! {
-        Window {
-            set_title: Some("Counter"),
-            set_default_height: 200,
-            set_default_width: 200,
+        ApplicationWindow {
+            set_title: "Icons",
+            set_default_height: 300,
+            set_default_width: 300,
 
             gtk::Box {
-                set_orientation: gtk::Orientation::Vertical,
-                set_spacing: 10,
+                set_orientation: gtk::Orientation::Vertical;
+                set_spacing: 20,
                 set_margin_all: 20,
 
-                gtk::Label {
-                    #[watch]
-                    set_label: &format!("{}", model.counter)
-                },
-
-                gtk::Box {
-                    set_orientation: gtk::Orientation::Horizontal,
-                    set_halign: gtk::Align::Center,
-                    set_spacing: 5,
-                    set_margin_all: 5,
-
-                    gtk::Button {
-                        add_css_class: "circular",
-                        set_icon_name: "list-add-symbolic",
-                        connect_clicked => AppInput::Increment
-                    },
-                    gtk::Button {
-                        add_css_class: "circular",
-                        set_icon_name: "list-remove-symbolic",
-                        connect_clicked => AppInput::Decrement
-                    }
-                }
+                gtk::
             }
-
         }
     }
 
     fn init(
-            counter: Self::Init,
+            icon1: Self::Init,
+            icon2: Self::Init,
+            identical: Self::Init,
             root: &Self::Root,
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
-        let model = AppModel{counter};
+        let model = AppModel{icon1: random_icon(), icon2: random_icon(), identical: false, tracker: 0};
         let widgets = view_output!();
+        set_global_css(".identical {background: #8ff0a4}");
         ComponentParts { model: model, widgets: widgets }
     }
 
-    fn update(&mut self, message: Self::Input, _sender: ComponentSender<Self>) {
+    fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
         match message {
-            AppInput::Increment => {
-                self.counter += 1;
-            }
-            AppInput::Decrement => {
-                self.counter -= 1;
+            AppInput::Change_1 => {
+                
             }
         }
     }
-}
-
-fn main() {
-    let app = RelmApp::new("Counter");
-    app.run::<AppModel>(0);
 }
