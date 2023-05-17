@@ -1,5 +1,5 @@
 use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, OrientableExt};
-use relm4::{gtk::{self, traits::WidgetExt}, ComponentParts, ComponentSender, RelmApp, RelmWidgetExt, SimpleComponent};
+use relm4::{gtk::{self, traits::WidgetExt}, adw::Window as Window, ComponentParts, ComponentSender, RelmApp, RelmWidgetExt, SimpleComponent};
 
 #[derive(Debug)]
 enum AppInput {
@@ -21,7 +21,7 @@ impl SimpleComponent for AppModel {
     type Init = isize;
 
     view! {
-        gtk::Window {
+        Window {
             set_title: Some("Counter"),
             set_default_height: 200,
             set_default_width: 200,
