@@ -1,7 +1,8 @@
-use gtk::prelude::*;
-use relm4::{gtk::{self, traits::WidgetExt}, ComponentParts, ComponentSender, RelmApp, RelmWidgetExt, SimpleComponent, set_global_css};
+use gtk::prelude::{BoxExt, ButtonExt, OrientableExt};
+use rand::prelude::IteratorRandom;
+use relm4::gtk::traits::WidgetExt;
+use relm4::{gtk, ComponentParts, ComponentSender, RelmApp, RelmWidgetExt, SimpleComponent};
 use relm4::adw::{Application, ApplicationWindow, Window, ToastOverlay, Toast};
-use tracker;
 
 const ICON_LIST: &[&str] = &[
     "bookmark-new-symbolic",
@@ -16,61 +17,100 @@ const ICON_LIST: &[&str] = &[
 ];
 
 fn random_icon() -> &'static str {
-    ICON_LIST.iter().choose().expect("Could not choose a random icon")
+    ICON_LIST.iter().choose(&mut rand::thread_rng()).expect("Could not choose a random icon")
 }
 
 #[derive(Debug)]
 enum AppInput {
-    Change_1,
-    Change_2,
+    Change1,
+    Change2,
 }
 
 #[tracker::track]
 struct AppModel {
-    icon1: &str,
-    icon2: &str,
-    identical: bool,
+    icon1: &'static str,
+    icon2: &'static str,
+    icons_identical: bool,
 }
 
+#[relm4::component]
 impl SimpleComponent for AppModel {
     type Input = AppInput;
     type Output = ();
-    type Init = &str;
+    type Init = ();
 
     view! {
-        ApplicationWindow {
-            set_title: "Icons",
-            set_default_height: 300,
-            set_default_width: 300,
+        Window {
+            #[track = "model.changed(AppModel::icons_identical())"]
+            set_class_active: ("identical", model.icons_identical),
 
             gtk::Box {
-                set_orientation: gtk::Orientation::Vertical;
+                set_orientation: gtk::Orientation::Horizontal,
                 set_spacing: 20,
                 set_margin_all: 20,
 
-                gtk::
+                gtk::Box {
+                    set_orientation: gtk::Orientation::Vertical,
+                    set_spacing: 20,
+                    set_margin_all: 20,
+
+                    gtk::Image {
+                        set_pixel_size: 50,
+                        #[track = "model.changed(AppModel::icon1())"]
+                        set_icon_name: Some(model.icon1),
+                    },
+                    gtk::Button {
+                        add_css_class: "circular",
+                        set_icon_name: "list-add-symbolic",
+                        connect_clicked => AppInput::Change1
+                    }
+                },
+
+                gtk::Box {
+                    set_orientation: gtk::Orientation::Vertical,
+                    set_spacing: 20,
+                    set_margin_all: 20,
+
+                    gtk::Image {
+                        set_pixel_size: 50,
+                        #[track = "model.changed(AppModel::icon2())"]
+                        set_icon_name: Some(model.icon2)
+                    },
+                    gtk::Button {
+                        add_css_class: "circular",
+                        set_icon_name: "update-symbolic",
+                        connect_clicked => AppInput::Change2
+                    }
+                }
+
             }
         }
     }
 
     fn init(
-            icon1: Self::Init,
-            icon2: Self::Init,
-            identical: Self::Init,
+            _params: Self::Init, // Not used so add _
             root: &Self::Root,
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
-        let model = AppModel{icon1: random_icon(), icon2: random_icon(), identical: false, tracker: 0};
+        let model = AppModel{icon1: random_icon(), icon2: random_icon(), icons_identical: false, tracker: 0};
         let widgets = view_output!();
-        set_global_css(".identical {background: #8ff0a4}");
+        relm4::set_global_css(".identical {background: #8ff0a4}");
         ComponentParts { model: model, widgets: widgets }
     }
 
     fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
         match message {
-            AppInput::Change_1 => {
-                
+            AppInput::Change1 => {
+                self.set_icon1(random_icon());
+            }
+            AppInput::Change2 => {
+                self.set_icon2(random_icon());
             }
         }
     }
+}
+
+fn main() {
+    let app = RelmApp::new("com.github.Kdwk.Icons");
+    app.run::<AppModel>(());
 }
