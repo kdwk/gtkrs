@@ -48,11 +48,13 @@ impl SimpleComponent for AppModel {
                 set_orientation: gtk::Orientation::Horizontal,
                 set_spacing: 20,
                 set_margin_all: 20,
+                set_halign: gtk::Align::Center,
 
                 gtk::Box {
                     set_orientation: gtk::Orientation::Vertical,
                     set_spacing: 20,
                     set_margin_all: 20,
+                    set_valign: gtk::Align::Center,
 
                     gtk::Image {
                         set_pixel_size: 50,
@@ -61,7 +63,7 @@ impl SimpleComponent for AppModel {
                     },
                     gtk::Button {
                         add_css_class: "circular",
-                        set_icon_name: "list-add-symbolic",
+                        set_icon_name: "update",
                         connect_clicked => AppInput::Change1
                     }
                 },
@@ -70,6 +72,7 @@ impl SimpleComponent for AppModel {
                     set_orientation: gtk::Orientation::Vertical,
                     set_spacing: 20,
                     set_margin_all: 20,
+                    set_valign: gtk::Align::Center,
 
                     gtk::Image {
                         set_pixel_size: 50,
@@ -78,7 +81,7 @@ impl SimpleComponent for AppModel {
                     },
                     gtk::Button {
                         add_css_class: "circular",
-                        set_icon_name: "update-symbolic",
+                        set_icon_name: "update",
                         connect_clicked => AppInput::Change2
                     }
                 }
@@ -112,5 +115,6 @@ impl SimpleComponent for AppModel {
 
 fn main() {
     let app = RelmApp::new("com.github.Kdwk.Icons");
+    relm4_icons::initialize_icons();
     app.run::<AppModel>(());
 }
