@@ -102,6 +102,8 @@ impl SimpleComponent for AppModel {
     }
 
     fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
+        // Reset tracker value
+        self.reset();
         match message {
             AppInput::Change1 => {
                 self.set_icon1(random_icon());
@@ -110,6 +112,7 @@ impl SimpleComponent for AppModel {
                 self.set_icon2(random_icon());
             }
         }
+        self.set_icons_identical(self.get_icon1()==self.get_icon2());
     }
 }
 
