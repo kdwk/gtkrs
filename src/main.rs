@@ -2,7 +2,7 @@ use gtk::prelude::{BoxExt, ButtonExt, OrientableExt};
 use rand::prelude::IteratorRandom;
 use relm4::gtk::traits::WidgetExt;
 use relm4::{gtk, ComponentParts, ComponentSender, RelmApp, RelmWidgetExt, SimpleComponent};
-use relm4::adw::{Application, ApplicationWindow, Window, ToastOverlay, Toast};
+use relm4::adw::{Application, ApplicationWindow, Window, ToastOverlay, Toast, HeaderBar};
 
 const ICON_LIST: &[&str] = &[
     "bookmark-new-symbolic",
@@ -45,48 +45,58 @@ impl SimpleComponent for AppModel {
             set_class_active: ("identical", model.icons_identical),
 
             gtk::Box {
-                set_orientation: gtk::Orientation::Horizontal,
-                set_spacing: 20,
-                set_margin_all: 20,
-                set_halign: gtk::Align::Center,
-
-                gtk::Box {
-                    set_orientation: gtk::Orientation::Vertical,
-                    set_spacing: 20,
-                    set_margin_all: 20,
-                    set_valign: gtk::Align::Center,
-
-                    gtk::Image {
-                        set_pixel_size: 50,
-                        #[track = "model.changed(AppModel::icon1())"]
-                        set_icon_name: Some(model.icon1),
-                    },
-                    gtk::Button {
-                        add_css_class: "circular",
-                        set_icon_name: "update",
-                        connect_clicked => AppInput::Change1
-                    }
+                set_orientation: gtk::Orientation::Vertical,
+                
+                HeaderBar {
+                    add_css_class: "flat"
                 },
 
                 gtk::Box {
-                    set_orientation: gtk::Orientation::Vertical,
+                    set_orientation: gtk::Orientation::Horizontal,
                     set_spacing: 20,
                     set_margin_all: 20,
-                    set_valign: gtk::Align::Center,
-
-                    gtk::Image {
-                        set_pixel_size: 50,
-                        #[track = "model.changed(AppModel::icon2())"]
-                        set_icon_name: Some(model.icon2)
+                    set_halign: gtk::Align::Center,
+    
+                    gtk::Box {
+                        set_orientation: gtk::Orientation::Vertical,
+                        set_spacing: 20,
+                        set_margin_all: 20,
+                        set_valign: gtk::Align::Center,
+    
+                        gtk::Image {
+                            set_pixel_size: 50,
+                            #[track = "model.changed(AppModel::icon1())"]
+                            set_icon_name: Some(model.icon1),
+                        },
+                        gtk::Button {
+                            add_css_class: "circular",
+                            set_icon_name: "update",
+                            connect_clicked => AppInput::Change1
+                        }
                     },
-                    gtk::Button {
-                        add_css_class: "circular",
-                        set_icon_name: "update",
-                        connect_clicked => AppInput::Change2
+    
+                    gtk::Box {
+                        set_orientation: gtk::Orientation::Vertical,
+                        set_spacing: 20,
+                        set_margin_all: 20,
+                        set_valign: gtk::Align::Center,
+    
+                        gtk::Image {
+                            set_pixel_size: 50,
+                            #[track = "model.changed(AppModel::icon2())"]
+                            set_icon_name: Some(model.icon2)
+                        },
+                        gtk::Button {
+                            add_css_class: "circular",
+                            set_icon_name: "update",
+                            connect_clicked => AppInput::Change2
+                        }
                     }
+    
                 }
-
             }
+
+
         }
     }
 
