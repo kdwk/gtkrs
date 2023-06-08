@@ -1,7 +1,7 @@
-use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, OrientableExt};
-use relm4::{gtk::{self, traits::WidgetExt, prelude::*}, ComponentParts, ComponentSender, RelmApp, RelmWidgetExt, SimpleComponent};
-use relm4::adw::{Application, ApplicationWindow, Window, ToastOverlay, Toast, HeaderBar};
-use relm4_macros::view;
+use relm4::gtk::{prelude::*, Box, Label};
+use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog};
+use relm4::prelude::*;
+use relm4_macros::*;
 
 pub struct Header;
 
@@ -12,7 +12,7 @@ pub enum HeaderOutput {
     Export,
 }
 
-#[relm4::component]
+#[relm4::component(pub)]
 impl SimpleComponent for Header {
     type Init = ();
     type Input = ();
@@ -21,6 +21,7 @@ impl SimpleComponent for Header {
     view! {
         #[root]
         HeaderBar {
+            add_css_class: "flat",
             #[wrap(Some)]
             set_title_widget = &gtk::Box {
                 add_css_class: "linked",

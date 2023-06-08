@@ -1,10 +1,10 @@
-use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, OrientableExt};
+#![allow(unused_imports)]
+use relm4::gtk::{prelude::*, Box, Label};
+use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog};
+use relm4::prelude::*;
+use relm4_macros::*;
 use gtkrs::{header::{Header, HeaderOutput}, dialog::{Dialog, DialogOutput, DialogInput}};
-use relm4::{gtk::{self, traits::WidgetExt, prelude::*, Box, Label}, ComponentParts, ComponentSender, RelmApp, RelmWidgetExt, SimpleComponent, Component};
-use relm4::adw::{Application, ApplicationWindow, Window, ToastOverlay, Toast, HeaderBar};
-use relm4_macros::view;
 
-#[derive(Debug)]
 struct App {
     mode: AppMode,
     header: Controller<Header>,
@@ -40,13 +40,19 @@ impl SimpleComponent for App {
 
             Box {
                 set_orientation: gtk::Orientation::Vertical,
-                Some(model.header.widget()),
+                model.header.widget(),
 
-                Label {
-                    #[watch]
-                    set_label: &format!("Placeholder for {:?}", model.mode),
+                Box {
+                    set_orientation: gtk::Orientation::Vertical,
+                    set_vexpand: true,
+                    set_valign: gtk::Align::Center,
+
+                    Label {
+                        #[watch]
+                        set_label: &format!("Placeholder for {:?}", model.mode),
+                    }
                 }
-            }
+            },
             
             connect_close_request[sender] => move |_| {
                 sender.input(AppInput::CloseRequest);
@@ -69,7 +75,7 @@ impl SimpleComponent for App {
                                             });
         let dialog: Controller<Dialog> = Dialog::builder()
                                             .transient_for(root)
-                                            .launch(true)
+                                            .launch(false)
                                             .forward(sender.input_sender(), |message| match message{
                                                 DialogOutput::CloseWindow => AppInput::CloseWindow,
                                             });

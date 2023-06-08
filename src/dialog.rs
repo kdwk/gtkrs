@@ -1,7 +1,7 @@
-use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, OrientableExt};
-use relm4::{gtk::{self, traits::WidgetExt, prelude::*}, ComponentParts, ComponentSender, RelmApp, RelmWidgetExt, SimpleComponent};
-use relm4::adw::{Application, ApplicationWindow, Window, ToastOverlay, Toast, HeaderBar, MessageDialog, ResponseAppearance};
-use relm4_macros::view;
+use relm4::gtk::{prelude::*, Box, Label};
+use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ResponseAppearance};
+use relm4::prelude::*;
+use relm4_macros::*;
 
 #[derive(Debug)]
 pub struct Dialog {
@@ -20,7 +20,7 @@ pub enum DialogOutput {
     CloseWindow,
 }
 
-#[relm4::component]
+#[relm4::component(pub)]
 impl SimpleComponent for Dialog {
     type Init = bool;
     type Input = DialogInput;
@@ -28,7 +28,7 @@ impl SimpleComponent for Dialog {
 
     view! {
         #[root]
-        MessageDialog::new(None, 
+        MessageDialog::new(gtk::Window::NONE, 
                             Some("Discard changes and close?"), 
                             Some("All unsaved changes will be lost")
         ) {
@@ -38,13 +38,13 @@ impl SimpleComponent for Dialog {
                 add_response: ("cancel", "Cancel"),
                 add_response: ("discard", "Discard"),
                 set_response_appearance: ("discard", ResponseAppearance::Destructive),
-                connect_response[sender] => move |_, response| {
+                connect_response: (None, move |_, response| {
                     sender.input(if response=="cancel" {
                         DialogInput::Cancel
                     } else {
                         DialogInput::Discard
                     })
-                }
+                })
             }
     }
 
