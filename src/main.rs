@@ -1,4 +1,5 @@
 #![allow(unused_imports)]
+#![allow(unused_variables)]
 use relm4::gtk::{prelude::*, Box, Label};
 use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog};
 use relm4::prelude::*;

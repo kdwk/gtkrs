@@ -44,7 +44,10 @@ impl SimpleComponent for Dialog {
                     } else {
                         DialogInput::Discard
                     })
-                })
+                }),
+                connect_close_request => move |_| {
+                    gtk::Inhibit(true)
+                }
             }
     }
 
