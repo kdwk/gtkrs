@@ -2,3 +2,4 @@
 #![allow(unused_variables)]
 pub mod header;
 pub mod dialog;
+pub mod stack;

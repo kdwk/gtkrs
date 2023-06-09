@@ -3,7 +3,7 @@ use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack, ViewSt
 use relm4::prelude::*;
 use relm4_macros::*;
 use relm4_icons::icon_name;
-use gtkrs::{header::{Header, HeaderOutput}, dialog::{Dialog, DialogOutput, DialogInput}};
+use crate::{header::{Header, HeaderOutput}, dialog::{Dialog, DialogOutput, DialogInput}};
 
 pub struct Stack;
 

@@ -4,13 +4,13 @@ use relm4::gtk::{prelude::*, Box, Label};
 use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog};
 use relm4::prelude::*;
 use relm4_macros::*;
-use gtkrs::{header::{Header, HeaderOutput}, dialog::{Dialog, DialogOutput, DialogInput}};
+use gtkrs::{header::{Header, HeaderOutput}, dialog::{Dialog, DialogOutput, DialogInput}, stack::{Stack}};
 
 struct App {
     mode: AppMode,
     header: Controller<Header>,
     dialog: Option<Controller<Dialog>>,
-    // stack: ??
+    stack: Option<&'static ViewStack>,
 }
 
 #[derive(Debug)]
@@ -69,13 +69,6 @@ impl Component for App {
             root: &Self::Root,
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
-        let header: Controller<Header> = Header::builder()
-                                            .launch(())
-                                            .forward(sender.input_sender(), |message| match message {
-                                                HeaderOutput::View => AppInput::ChangeView(AppMode::View),
-                                                HeaderOutput::Edit => AppInput::ChangeView(AppMode::Edit),
-                                                HeaderOutput::Export => AppInput::ChangeView(AppMode::Export),
-                                            });
         let dialog: Option<Controller<Dialog>> = None;
         // let dialog: Controller<Dialog> = Dialog::builder()
         //                                     .transient_for(root)
@@ -83,7 +76,15 @@ impl Component for App {
         //                                     .forward(sender.input_sender(), |message| match message{
         //                                         DialogOutput::CloseWindow => AppInput::CloseWindow,
         //                                     });
-        let model = App { mode: init, header: header, dialog: dialog };
+        let stack: Option<&'static ViewStack> = Some(&Stack::builder().launch(()));
+        let header: Controller<Header> = Header::builder()
+                                                    .launch(&stack)
+                                                    .forward(sender.input_sender(), |message| match message {
+                                                        HeaderOutput::View => AppInput::ChangeView(AppMode::View),
+                                                        HeaderOutput::Edit => AppInput::ChangeView(AppMode::Edit),
+                                                        HeaderOutput::Export => AppInput::ChangeView(AppMode::Export),
+                                                    });
+        let model = App { mode: init, header: header, dialog: dialog, stack: stack };
         let widgets = view_output!();
         ComponentParts { model: model, widgets: widgets }
     }

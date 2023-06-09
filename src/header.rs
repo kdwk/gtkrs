@@ -1,9 +1,12 @@
 use relm4::gtk::{prelude::*, Box, Label};
-use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog};
+use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewSwitcherTitle, ViewStack};
 use relm4::prelude::*;
 use relm4_macros::*;
+use crate::stack::Stack;
 
-pub struct Header;
+pub struct Header {
+    stack: Option<&'static ViewStack>
+}
 
 #[derive(Debug)]
 pub enum HeaderOutput {
@@ -14,7 +17,7 @@ pub enum HeaderOutput {
 
 #[relm4::component(pub)]
 impl SimpleComponent for Header {
-    type Init = ();
+    type Init = Option<&'static ViewStack>;
     type Input = ();
     type Output = HeaderOutput;
 
@@ -23,39 +26,43 @@ impl SimpleComponent for Header {
         HeaderBar {
             add_css_class: "flat",
             #[wrap(Some)]
-            set_title_widget = &gtk::Box {
-                add_css_class: "linked",
+            // set_title_widget = &gtk::Box {
+            //     add_css_class: "linked",
                 
-                #[name = "group"]
-                gtk::ToggleButton {
-                    set_label: "View",
-                    set_active: true,
-                    connect_toggled[sender] => move |btn| {
-                        if btn.is_active() {
-                            sender.output(HeaderOutput::View).unwrap()
-                        }
-                    }
-                },
-                gtk::ToggleButton {
-                    set_label: "Edit",
-                    set_group: Some(&group),
-                    set_active: true,
-                    connect_toggled[sender] => move |btn| {
-                        if btn.is_active() {
-                            sender.output(HeaderOutput::Edit).unwrap()
-                        }
-                    }
-                },
-                gtk::ToggleButton {
-                    set_label: "Export",
-                    set_group: Some(&group),                    
-                    set_active: true,
-                    connect_toggled[sender] => move |btn| {
-                        if btn.is_active() {
-                            sender.output(HeaderOutput::Export).unwrap()
-                        }
-                    }
-                },
+            //     #[name = "group"]
+            //     gtk::ToggleButton {
+            //         set_label: "View",
+            //         set_active: true,
+            //         connect_toggled[sender] => move |btn| {
+            //             if btn.is_active() {
+            //                 sender.output(HeaderOutput::View).unwrap()
+            //             }
+            //         }
+            //     },
+            //     gtk::ToggleButton {
+            //         set_label: "Edit",
+            //         set_group: Some(&group),
+            //         set_active: true,
+            //         connect_toggled[sender] => move |btn| {
+            //             if btn.is_active() {
+            //                 sender.output(HeaderOutput::Edit).unwrap()
+            //             }
+            //         }
+            //     },
+            //     gtk::ToggleButton {
+            //         set_label: "Export",
+            //         set_group: Some(&group),                    
+            //         set_active: true,
+            //         connect_toggled[sender] => move |btn| {
+            //             if btn.is_active() {
+            //                 sender.output(HeaderOutput::Export).unwrap()
+            //             }
+            //         }
+            //     },
+            // }
+            set_title_widget = &ViewSwitcherTitle {
+                set_stack: model.stack,
+                set_title: "Try View Switcher",
             }
         }
     }
@@ -65,7 +72,8 @@ impl SimpleComponent for Header {
             root: &Self::Root,
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
-        let model = Header;
+        let stack = init;
+        let model = Header {stack: stack};
         let widgets = view_output!();
         ComponentParts { model: model, widgets: widgets }
     }
