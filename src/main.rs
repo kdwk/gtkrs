@@ -9,7 +9,7 @@ use gtkrs::{header::{Header, HeaderOutput}, dialog::{Dialog, DialogOutput, Dialo
 struct App {
     mode: AppMode,
     header: Controller<Header>,
-    dialog: Controller<Dialog>,
+    // dialog: Controller<Dialog>,
     // stack: ??
 }
 
@@ -74,13 +74,13 @@ impl SimpleComponent for App {
                                                 HeaderOutput::Edit => AppInput::ChangeView(AppMode::Edit),
                                                 HeaderOutput::Export => AppInput::ChangeView(AppMode::Export),
                                             });
-        let dialog: Controller<Dialog> = Dialog::builder()
-                                            .transient_for(root)
-                                            .launch(false)
-                                            .forward(sender.input_sender(), |message| match message{
-                                                DialogOutput::CloseWindow => AppInput::CloseWindow,
-                                            });
-        let model = App { mode: init, header: header, dialog: dialog };
+        // let dialog: Controller<Dialog> = Dialog::builder()
+        //                                     .transient_for(root)
+        //                                     .launch(false)
+        //                                     .forward(sender.input_sender(), |message| match message{
+        //                                         DialogOutput::CloseWindow => AppInput::CloseWindow,
+        //                                     });
+        let model = App { mode: init, header: header };
         let widgets = view_output!();
         ComponentParts { model: model, widgets: widgets }
     }
@@ -88,7 +88,13 @@ impl SimpleComponent for App {
     fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
         match message {
             AppInput::ChangeView(mode) => self.mode = mode,
-            AppInput::CloseRequest => self.dialog.sender().send(DialogInput::Show).unwrap(),
+            // AppInput::CloseRequest => self.dialog.sender().send(DialogInput::Show).unwrap(),
+            AppInput::CloseRequest => {
+                let stream = Dialog::builder().transient_for(root).launch(true).into_stream();
+                sender.oneshot_command(async move {
+                    let result = stream.recv_one().await;
+                })
+            }
             AppInput::CloseWindow => relm4::main_application().quit(),
         }
     }
