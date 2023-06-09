@@ -4,37 +4,33 @@ use relm4::prelude::*;
 use relm4_macros::*;
 
 #[derive(Debug)]
-pub struct Dialog {
-    shown: bool
-}
+pub struct Dialog;
 
 #[derive(Debug)]
 pub enum DialogInput {
-    Show,
     Discard,
     Cancel,
 }
 
 #[derive(Debug)]
 pub enum DialogOutput {
+    CloseDialog,
     CloseWindow,
 }
 
 #[relm4::component(pub)]
 impl SimpleComponent for Dialog {
-    type Init = bool;
+    type Init = ();
     type Input = DialogInput;
     type Output = DialogOutput;
 
     view! {
-        #[root]
-        MessageDialog::new(gtk::Window::NONE, 
+        dialog = MessageDialog::new(gtk::Window::NONE, 
                             Some("Discard changes and close?"), 
                             Some("All unsaved changes will be lost")
         ) {
                 set_modal: true,
-                #[watch]
-                set_visible: model.shown,
+                set_visible: true,
                 add_response: ("cancel", "Cancel"),
                 add_response: ("discard", "Discard"),
                 set_response_appearance: ("discard", ResponseAppearance::Destructive),
@@ -56,19 +52,24 @@ impl SimpleComponent for Dialog {
             root: &Self::Root,
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
-        let model = Dialog{shown: init};
+        let model = Dialog{};
         let widgets = view_output!();
         ComponentParts { model: model, widgets: widgets }
     }
 
     fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
         match message {
-            DialogInput::Show => self.shown = true,
-            DialogInput::Cancel => self.shown = false,
+            DialogInput::Cancel => {
+                sender.output(DialogOutput::CloseDialog).unwrap()
+            },
             DialogInput::Discard => {
-                self.shown = false;
                 sender.output(DialogOutput::CloseWindow).unwrap()
             }
         }
+    }
+
+    fn shutdown(&mut self, widgets: &mut Self::Widgets, output: relm4::Sender<Self::Output>) {
+        println!("Dialog shutdown");
+        widgets.dialog.destroy();
     }
 }

@@ -9,7 +9,7 @@ use gtkrs::{header::{Header, HeaderOutput}, dialog::{Dialog, DialogOutput, Dialo
 struct App {
     mode: AppMode,
     header: Controller<Header>,
-    // dialog: Controller<Dialog>,
+    dialog: Option<Controller<Dialog>>,
     // stack: ??
 }
 
@@ -23,15 +23,17 @@ enum AppMode {
 #[derive(Debug)]
 enum AppInput {
     ChangeView(AppMode),
+    CloseDialog,
     CloseRequest,
     CloseWindow,
 }
 
 #[relm4::component]
-impl SimpleComponent for App {
+impl Component for App {
     type Init = AppMode;
     type Input = AppInput;
     type Output = ();
+    type CommandOutput = ();
 
     view! {
         #[root]
@@ -74,29 +76,55 @@ impl SimpleComponent for App {
                                                 HeaderOutput::Edit => AppInput::ChangeView(AppMode::Edit),
                                                 HeaderOutput::Export => AppInput::ChangeView(AppMode::Export),
                                             });
+        let dialog: Option<Controller<Dialog>> = None;
         // let dialog: Controller<Dialog> = Dialog::builder()
         //                                     .transient_for(root)
         //                                     .launch(false)
         //                                     .forward(sender.input_sender(), |message| match message{
         //                                         DialogOutput::CloseWindow => AppInput::CloseWindow,
         //                                     });
-        let model = App { mode: init, header: header };
+        let model = App { mode: init, header: header, dialog: dialog };
         let widgets = view_output!();
         ComponentParts { model: model, widgets: widgets }
     }
 
-    fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
+    fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>, root: &Self::Root) {
         match message {
             AppInput::ChangeView(mode) => self.mode = mode,
             // AppInput::CloseRequest => self.dialog.sender().send(DialogInput::Show).unwrap(),
             AppInput::CloseRequest => {
-                let stream = Dialog::builder().transient_for(root).launch(true).into_stream();
-                sender.oneshot_command(async move {
-                    let result = stream.recv_one().await;
-                })
-            }
-            AppInput::CloseWindow => relm4::main_application().quit(),
+                // let stream = Dialog::builder()
+                //                         .transient_for(root)
+                //                         .launch(())
+                                        // .forward(sender.input_sender(), |message| match message {
+                                        //     DialogOutput::CloseWindow => AppInput::CloseWindow,
+                                        // }).into_stream();
+                // sender.oneshot_command(async move {
+                //     let result = stream.recv_one().await;
+                // })
+                self.dialog = Some(Dialog::builder()
+                                                .transient_for(root)
+                                                .launch(())
+                                                .forward(sender.input_sender(), |message| match message {
+                                                    DialogOutput::CloseDialog => AppInput::CloseDialog,
+                                                    DialogOutput::CloseWindow => AppInput::CloseWindow,
+                                                }));
+            },
+            AppInput::CloseWindow => {
+                self.dialog = None;
+                relm4::main_application().quit()
+            },
+            AppInput::CloseDialog => self.dialog = None,
         }
+    }
+
+    fn update_cmd(
+            &mut self,
+            message: Self::CommandOutput,
+            sender: ComponentSender<Self>,
+            root: &Self::Root,
+        ) {
+        
     }
 }
 
