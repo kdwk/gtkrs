@@ -69,7 +69,6 @@ impl SimpleComponent for Dialog {
     }
 
     fn shutdown(&mut self, widgets: &mut Self::Widgets, output: relm4::Sender<Self::Output>) {
-        println!("Dialog shutdown");
         widgets.dialog.destroy();
     }
 }
