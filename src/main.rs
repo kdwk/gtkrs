@@ -1,7 +1,7 @@
 #![allow(unused_imports)]
 #![allow(unused_variables)]
 use relm4::gtk::{prelude::*, Box, Label};
-use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog};
+use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack};
 use relm4::prelude::*;
 use relm4_macros::*;
 use gtkrs::{header::{Header, HeaderOutput}, dialog::{Dialog, DialogOutput, DialogInput}, stack::{Stack}};
@@ -10,7 +10,7 @@ struct App {
     mode: AppMode,
     header: Controller<Header>,
     dialog: Option<Controller<Dialog>>,
-    stack: Option<&'static ViewStack>,
+    stack: Controller<Stack>,
 }
 
 #[derive(Debug)]
@@ -44,17 +44,7 @@ impl Component for App {
             Box {
                 set_orientation: gtk::Orientation::Vertical,
                 model.header.widget(),
-
-                Box {
-                    set_orientation: gtk::Orientation::Vertical,
-                    set_vexpand: true,
-                    set_valign: gtk::Align::Center,
-
-                    Label {
-                        #[watch]
-                        set_label: &format!("Placeholder for {:?}", model.mode),
-                    }
-                }
+                model.stack.widget(),
             },
             
             connect_close_request[sender] => move |_| {
@@ -70,15 +60,10 @@ impl Component for App {
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
         let dialog: Option<Controller<Dialog>> = None;
-        // let dialog: Controller<Dialog> = Dialog::builder()
-        //                                     .transient_for(root)
-        //                                     .launch(false)
-        //                                     .forward(sender.input_sender(), |message| match message{
-        //                                         DialogOutput::CloseWindow => AppInput::CloseWindow,
-        //                                     });
-        let stack: Option<&'static ViewStack> = Some(&Stack::builder().launch(()));
+        let stack: Controller<Stack> = Stack::builder().launch(());
+        let stack_ref: Option<&'static Stack> = Some(&stack.widget());
         let header: Controller<Header> = Header::builder()
-                                                    .launch(&stack)
+                                                    .launch(stack_ref)
                                                     .forward(sender.input_sender(), |message| match message {
                                                         HeaderOutput::View => AppInput::ChangeView(AppMode::View),
                                                         HeaderOutput::Edit => AppInput::ChangeView(AppMode::Edit),
@@ -92,17 +77,7 @@ impl Component for App {
     fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>, root: &Self::Root) {
         match message {
             AppInput::ChangeView(mode) => self.mode = mode,
-            // AppInput::CloseRequest => self.dialog.sender().send(DialogInput::Show).unwrap(),
             AppInput::CloseRequest => {
-                // let stream = Dialog::builder()
-                //                         .transient_for(root)
-                //                         .launch(())
-                                        // .forward(sender.input_sender(), |message| match message {
-                                        //     DialogOutput::CloseWindow => AppInput::CloseWindow,
-                                        // }).into_stream();
-                // sender.oneshot_command(async move {
-                //     let result = stream.recv_one().await;
-                // })
                 self.dialog = Some(Dialog::builder()
                                                 .transient_for(root)
                                                 .launch(())
@@ -117,15 +92,6 @@ impl Component for App {
             },
             AppInput::CloseDialog => self.dialog = None,
         }
-    }
-
-    fn update_cmd(
-            &mut self,
-            message: Self::CommandOutput,
-            sender: ComponentSender<Self>,
-            root: &Self::Root,
-        ) {
-        
     }
 }
 
