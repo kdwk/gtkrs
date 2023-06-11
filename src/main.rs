@@ -97,5 +97,6 @@ impl Component for App {
 
 fn main() {
     let app = RelmApp::new("com.github.kdwk.Dialog");
+    relm4_icons::initialize_icons();
     app.run::<App>(AppMode::View);
 }
