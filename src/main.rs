@@ -61,7 +61,7 @@ impl Component for App {
         ) -> ComponentParts<Self> {
         let dialog: Option<Controller<Dialog>> = None;
         let stack: Controller<Stack> = Stack::builder().launch(()).detach();
-        let stack_ref: Option<&'static ViewStack> = Some(&stack.widget().clone());
+        let stack_ref: Option<ViewStack> = Some(stack.widget().clone());
         let header: Controller<Header> = Header::builder()
                                                     .launch(stack_ref)
                                                     .forward(sender.input_sender(), |message| match message {

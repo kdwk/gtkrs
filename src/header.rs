@@ -5,7 +5,7 @@ use relm4_macros::*;
 use crate::stack::Stack;
 
 pub struct Header {
-    stack: Option<&'static ViewStack>
+    stack: Option<ViewStack>
 }
 
 #[derive(Debug)]
@@ -17,7 +17,7 @@ pub enum HeaderOutput {
 
 #[relm4::component(pub)]
 impl SimpleComponent for Header {
-    type Init = Option<&'static ViewStack>;
+    type Init = Option<ViewStack>;
     type Input = ();
     type Output = HeaderOutput;
 
@@ -61,7 +61,7 @@ impl SimpleComponent for Header {
             //     },
             // }
             set_title_widget = &ViewSwitcherTitle {
-                set_stack: model.stack,
+                set_stack: model.stack.as_ref(),
                 set_title: "Try View Switcher",
             }
         }
@@ -72,7 +72,7 @@ impl SimpleComponent for Header {
             root: &Self::Root,
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
-        let stack = init;
+        let stack: Option<ViewStack> = init;
         let model = Header {stack: stack};
         let widgets = view_output!();
         ComponentParts { model: model, widgets: widgets }
