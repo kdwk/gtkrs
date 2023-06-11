@@ -25,7 +25,6 @@ impl SimpleComponent for Header {
         #[root]
         HeaderBar {
             add_css_class: "flat",
-            #[wrap(Some)]
             // set_title_widget = &gtk::Box {
             //     add_css_class: "linked",
                 
@@ -60,6 +59,7 @@ impl SimpleComponent for Header {
             //         }
             //     },
             // }
+            #[wrap(Some)]
             set_title_widget = &ViewSwitcherTitle {
                 set_stack: model.stack.as_ref(),
                 set_title: "Try View Switcher",
