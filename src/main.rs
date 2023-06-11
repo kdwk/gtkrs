@@ -39,7 +39,7 @@ impl Component for App {
         #[root]
         Window {
             set_default_width: 500,
-            set_default_height: 300,
+            set_default_height: 500,
 
             Box {
                 set_orientation: gtk::Orientation::Vertical,

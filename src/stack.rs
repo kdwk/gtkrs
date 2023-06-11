@@ -1,5 +1,5 @@
-use relm4::gtk::{prelude::*, Box, Label};
-use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack, ViewStackPage};
+use relm4::gtk::{prelude::*, Box, Label, TextView, TextBuffer, TextTagTable};
+use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack, ViewStackPage, StatusPage};
 use relm4::prelude::*;
 use relm4_macros::*;
 use relm4_icons::icon_name::*;
@@ -18,13 +18,10 @@ impl SimpleComponent for Stack {
         ViewStack {
             set_vexpand: true,
 
-            add = &Box {
-                    set_orientation: gtk::Orientation::Vertical,
-                    set_valign: gtk::Align::Center,
-
-                    Label {
-                        set_label: "Placeholder for View"
-                    }
+            add = &StatusPage {
+                set_title: "View",
+                set_icon_name: Some("rich-text"),
+                set_description: Some("Placeholder for View")
             } -> {
                 set_name: Some("page1"),
                 set_title: Some("View"),
@@ -32,13 +29,10 @@ impl SimpleComponent for Stack {
                 set_use_underline: true,
             },
 
-            add = &Box {
-                    set_orientation: gtk::Orientation::Vertical,
-                    set_valign: gtk::Align::Center,
-
-                    Label {
-                        set_label: "Placeholder for Edit"
-                    }
+            add = &StatusPage {
+                set_title: "Edit",
+                set_icon_name: Some("edit"),
+                set_description: Some("Placeholder for Edit")
             } -> {
                 set_name: Some("page2"),
                 set_title: Some("Edit"),
@@ -46,14 +40,10 @@ impl SimpleComponent for Stack {
                 set_use_underline: true,
             },
 
-            add = &Box {
-                    set_orientation: gtk::Orientation::Vertical,
-                    set_valign: gtk::Align::Center,
-
-                    Label {
-                        set_label: "Placeholder for Export"
-                    }
-
+            add = &StatusPage {
+                set_title: "Export",
+                set_icon_name: Some("share"),
+                set_description: Some("Placeholder for Export")
             } -> {
                 set_name: Some("page3"),
                 set_title: Some("Export"),
