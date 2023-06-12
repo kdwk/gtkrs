@@ -3,7 +3,7 @@ use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack, ViewSt
 use relm4::prelude::*;
 use relm4_macros::*;
 use relm4_icons::icon_name::*;
-use crate::{header::{Header, HeaderOutput}, dialog::{Dialog, DialogOutput, DialogInput}};
+use crate::{header::{Header}, dialog::{Dialog, DialogOutput, DialogInput}};
 
 pub struct Stack;
 
@@ -14,7 +14,6 @@ impl SimpleComponent for Stack {
     type Output = ();
 
     view! {
-        #[root]
         ViewStack {
             set_vexpand: true,
 
