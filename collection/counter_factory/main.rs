@@ -130,7 +130,7 @@ impl SimpleComponent for App {
 
     view! {
         ApplicationWindow {
-            set_title: Some("Counters"),
+            set_title: Some("Counter Factory"),
             set_default_width: 279,
 
             gtk::Box {
@@ -228,7 +228,7 @@ impl SimpleComponent for App {
 }
 
 fn main () {
-    let app = RelmApp::new("com.github.kdwk.gtkrs");
+    let app = RelmApp::new("com.github.kdwk.CounterFactory");
     relm4_icons::initialize_icons();
     app.run::<App>(0);
 }
