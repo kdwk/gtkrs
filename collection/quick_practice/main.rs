@@ -105,6 +105,7 @@ impl SimpleComponent for App {
     }
 }
 
+// WIP: does not work
 // async fn open_file() -> ashpd::Result<()> {
 //     let files = SelectedFiles::open_file()
 //     .title("open a video")
