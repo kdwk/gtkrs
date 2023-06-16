@@ -4,11 +4,23 @@ use relm4::gtk::{prelude::*, Box, Label, Button, Orientation, Align, Video};
 use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack, StatusPage};
 use relm4::prelude::*;
 use relm4_macros::*;
-use webkit6::{prelude::*, WebView};
+use crate::webview::WebWindow;
 
-struct App {
-    uri: String,
+struct Entry {
+    url: String
 }
+
+#[derive(Debug)]
+enum EntryInput {
+    CloseWebWindow,
+}
+
+#[relm4::factory]
+impl FactoryComponent for Entry {
+    todo!();
+}
+
+struct App;
 
 #[derive(Debug)]
 enum AppInput {
@@ -27,19 +39,6 @@ impl SimpleComponent for App {
             set_default_width: 1000,
             set_title: Some(""),
 
-            Box {
-                set_orientation: Orientation::Vertical,
-                
-                // HeaderBar {
-                //     set_decoration_layout: Some(":close"),
-                //     add_css_class: "flat",
-                // },
-
-                WebView {
-                    set_vexpand: true,
-                    load_uri: model.uri.as_str(),
-                }
-            }
         }
     }
 
@@ -48,7 +47,7 @@ impl SimpleComponent for App {
             root: &Self::Root,
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
-        let model = App { uri: String::from("https://youtube.com")};
+        let model = App {  };
         let widgets = view_output!();
         ComponentParts { model: model, widgets: widgets }
     }
