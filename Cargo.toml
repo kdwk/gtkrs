@@ -13,3 +13,4 @@ relm4-icons = {version="0.6.0", features=["plus","minus","up","down","top","rich
 tracker = "0.2.1"
 rand = "0.8.5"
 ashpd = "0.4.0"
+webkit6 = "0.1.0"

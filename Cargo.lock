@@ -890,6 +890,7 @@ dependencies = [
  "relm4-icons",
  "relm4-macros",
  "tracker",
+ "webkit6",
 ]
 
 [[package]]
@@ -988,6 +989,31 @@ name = "itoa"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "453ad9f582a441959e5f0d088b02ce04cfe8d51a8eaf077f12ac6d3e94164ca6"
+
+[[package]]
+name = "javascriptcore6"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a84a054e5552a8042518ad0fdf9b7db6016c905c8f43e80b6f60ebeaee1d7a9b"
+dependencies = [
+ "bitflags",
+ "glib",
+ "javascriptcore6-sys",
+ "libc",
+ "once_cell",
+]
+
+[[package]]
+name = "javascriptcore6-sys"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d7b459b87377e33b68abba4a334b27159101c371c539e5484346f8e64528ef8c"
+dependencies = [
+ "glib-sys",
+ "gobject-sys",
+ "libc",
+ "system-deps",
+]
 
 [[package]]
 name = "js-sys"
@@ -1599,6 +1625,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "soup3"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5efe3b0d8335955d6433720767503233dc50ef4fb7fb72cd66634dbf764bb019"
+dependencies = [
+ "bitflags",
+ "futures-channel",
+ "gio",
+ "glib",
+ "libc",
+ "once_cell",
+ "soup3-sys",
+]
+
+[[package]]
+name = "soup3-sys"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "468c7c093ce5665bd19d19a871faf7b92f257788d1311ac874ab157b18867648"
+dependencies = [
+ "gio-sys",
+ "glib-sys",
+ "gobject-sys",
+ "libc",
+ "system-deps",
+]
+
+[[package]]
 name = "spin"
 version = "0.9.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1968,6 +2022,41 @@ checksum = "16b5f940c7edfdc6d12126d98c9ef4d1b3d470011c47c76a6581df47ad9ba721"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
+]
+
+[[package]]
+name = "webkit6"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "546f0c71d9a3a5e5cc22f581f1308dfc730a887acc65f8cefb0a6106460aafd8"
+dependencies = [
+ "bitflags",
+ "gdk4",
+ "gio",
+ "glib",
+ "gtk4",
+ "javascriptcore6",
+ "libc",
+ "once_cell",
+ "soup3",
+ "webkit6-sys",
+]
+
+[[package]]
+name = "webkit6-sys"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f0a64fe6a3afbb8029994bddd1918c65d9e76d555a86363444f11f166c3f46c2"
+dependencies = [
+ "gdk4-sys",
+ "gio-sys",
+ "glib-sys",
+ "gobject-sys",
+ "gtk4-sys",
+ "javascriptcore6-sys",
+ "libc",
+ "soup3-sys",
+ "system-deps",
 ]
 
 [[package]]
