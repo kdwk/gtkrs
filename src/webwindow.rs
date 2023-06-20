@@ -1,5 +1,5 @@
 use relm4::gtk::{prelude::*, Box, Label, Button, Orientation, Align, Video};
-use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack, StatusPage};
+use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack, StatusPage, ToastOverlay, Toast};
 use relm4::prelude::*;
 use relm4_macros::*;
 use webkit6::{prelude::*, WebView};
@@ -24,15 +24,15 @@ impl SimpleComponent for WebWindow {
             set_default_height: 1000,
             set_default_width: 1000,
 
-            Box {
-                set_orientation: Orientation::Vertical,
-                
-                WebView {
-                    set_vexpand: true,
-                    load_uri: model.url.as_str(),
-                    // connect_create => {
-                    //     let new_window = Window
-                    // }
+            ToastOverlay {
+                Box {
+                    set_orientation: Orientation::Vertical,
+                    
+                    WebView {
+                        set_vexpand: true,
+                        load_uri: model.url.as_str(),
+                        // connect_create => WebWindowInput::NewSmallWindow,
+                    }
                 }
             },
 
@@ -49,4 +49,10 @@ impl SimpleComponent for WebWindow {
         let widgets = view_output!();
         ComponentParts { model: model, widgets: widgets }
     }
+
+    // fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
+    //     match message {
+    //         WebWindowInput::NewSmallWindow => println!("New small window requested."),
+    //     }
+    // }
 }
