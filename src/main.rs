@@ -43,17 +43,23 @@ impl FactoryComponent for WebWindowControlBar {
             set_spacing:10,
             set_margin_all: 20,
             
+            #[name(back_btn)]
             Button {
                 add_css_class: "circular",
                 add_css_class: "toolbar-button",
                 set_icon_name: "left",
+                #[watch]
+                set_sensitive: model.web_view.can_go_back(),
                 connect_clicked => WebWindowControlBarInput::Back,
             },
 
+            #[name(forward_btn)]
             Button {
                 add_css_class: "circular",
                 add_css_class: "toolbar-button",
                 set_icon_name: "right",
+                #[watch]
+                set_sensitive: model.web_view.can_go_forward(),
                 connect_clicked => WebWindowControlBarInput::Forward,
             },
 
@@ -73,9 +79,16 @@ impl FactoryComponent for WebWindowControlBar {
 
     fn update(&mut self, message: Self::Input, sender: FactorySender<Self>) {
         match message {
-            WebWindowControlBarInput::Close => {},
-            WebWindowControlBarInput::Back => {},
-            WebWindowControlBarInput::Forward => {},
+            WebWindowControlBarInput::Close => {
+                self.webwindow.widgets().web_window.destroy();
+                sender.output(WebWindowControlBarOutput::RemoveMePlease(self.id));
+            },
+            WebWindowControlBarInput::Back => {
+                self.webwindow.widgets().web_window.go_back();
+            },
+            WebWindowControlBarInput::Forward => {
+                self.webwindow.widgets().web_window.go_forward();
+            },
         }
     }
 
@@ -98,7 +111,7 @@ struct App {
 
 #[derive(Debug)]
 enum AppInput {
-    NewWebWindow(String), // Also handles adding a WebWindowControlBar
+    NewWebWindow, // Also handles adding a WebWindowControlBar
     RemoveWebWindowControlBar(u32),
 }
 
@@ -122,26 +135,49 @@ impl SimpleComponent for App {
                     set_decoration_layout: Some(":close"),
                     add_css_class: "flat",
                 },
-    
-                Box {
-                    set_orientation: Orientation::Vertical,
-                    set_vexpand: true,
-                    set_margin_all: 20,
-                    set_spacing: 50,
-                    set_valign: Align::Center,
 
-                    Entry {
-                        #[watch]
-                        set_buffer: &model.url_entry_buffer,
-                        set_input_purpose: InputPurpose::Url,
-                        set_input_hints: InputHints::NO_SPELLCHECK,
-                    },
-    
-                    Button {
+                Box {
+                    set_orientation: gtk::Orientation::Vertical,
+                    set_spacing: 5,
+                    set_margin_all: 5,
+
+                    Box {
+                        set_orientation: Orientation::Horizontal,
+                        set_hexpand: true,
+                        set_margin_all: 5,
                         set_halign: Align::Center,
-                        add_css_class: "pill",
-                        set_label: "New WebWindow",
-                        connect_clicked => AppInput::NewWebWindow(String::from("https://apple.com"))
+
+                        Entry {
+                            set_hexpand: true,
+                            set_halign: Align::Fill,
+                            #[watch]
+                            set_buffer: &model.url_entry_buffer,
+                            set_input_purpose: InputPurpose::Url,
+                            set_input_hints: InputHints::NO_SPELLCHECK,
+                        },
+        
+                        Button {
+                            set_halign: Align::End,
+                            set_icon_name: "plus",
+                            connect_clicked => AppInput::NewWebWindow,
+                        }
+                    },
+
+                    Box {
+                        set_orientation: Orientation::Horizontal,
+                        set_hexpand: true,
+                        set_halign: Align::Center,
+
+                        Box {
+                            set_orientation: Orientation::Vertical,
+
+                            #[local_ref]
+                            webwindowcontrolbar_box -> Box {
+                                set_orientation: Orientation::Vertical,
+                                set_spacing: 5,
+                            }
+                        }
+
                     }
                 }
             }
@@ -155,13 +191,14 @@ impl SimpleComponent for App {
         ) -> ComponentParts<Self> {
         let webwindowcontrolbars = FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
         let model = App { webwindowcontrolbars: webwindowcontrolbars, url_entry_buffer: EntryBuffer::default(), used_ids: vec![] };
+        let webwindowcontrolbar_box = model.webwindowcontrolbars.widget();
         let widgets = view_output!();
         ComponentParts { model: model, widgets: widgets }
     }
 
     fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
         match message {
-            AppInput::NewWebWindow(url) => {
+            AppInput::NewWebWindow => {
                 let url = String::from(self.url_entry_buffer.text());
                 let new_webwindow = WebWindow::builder().launch(url).detach();
                 let id: u32 = 0;

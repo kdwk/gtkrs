@@ -20,6 +20,7 @@ impl SimpleComponent for WebWindow {
     type Output = ();
 
     view! {
+        #[name(web_window)]
         Window {
             set_default_height: 1000,
             set_default_width: 1000,
@@ -28,6 +29,7 @@ impl SimpleComponent for WebWindow {
                 Box {
                     set_orientation: Orientation::Vertical,
                     
+                    #[name(web_view)]
                     WebView {
                         set_vexpand: true,
                         load_uri: model.url.as_str(),
@@ -54,5 +56,9 @@ impl SimpleComponent for WebWindow {
     //     match message {
     //         WebWindowInput::NewSmallWindow => println!("New small window requested."),
     //     }
+    // }
+
+    // fn shutdown(&mut self, widgets: &mut Self::Widgets, output: relm4::Sender<Self::Output>) {
+    //     widgets.web_window.destroy();
     // }
 }
