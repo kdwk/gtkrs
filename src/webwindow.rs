@@ -5,18 +5,18 @@ use relm4_macros::*;
 use webkit6::{prelude::*, WebView};
 
 pub struct WebWindow {
-    url: String,
+    pub url: String,
 }
 
-// #[derive(Debug)]
-// enum WebWindowInput {
-//     PlaceHolder,
-// }
+#[derive(Debug)]
+enum WebWindowInput {
+    NewSmallWindow,
+}
 
 #[relm4::component(pub)]
 impl SimpleComponent for WebWindow {
     type Init = String;
-    type Input = WebWindowInput;
+    type Input = ();
     type Output = ();
 
     view! {
@@ -30,8 +30,13 @@ impl SimpleComponent for WebWindow {
                 WebView {
                     set_vexpand: true,
                     load_uri: model.url.as_str(),
+                    // connect_create => {
+                    //     let new_window = Window
+                    // }
                 }
-            }
+            },
+
+            present: (),
         }
     }
 
