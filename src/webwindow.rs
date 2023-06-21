@@ -10,7 +10,8 @@ pub struct WebWindow {
 
 #[derive(Debug)]
 enum WebWindowInput {
-    NewSmallWindow,
+    // NewSmallWindow,
+    WarnInsecure,
 }
 
 #[relm4::component(pub)]
@@ -25,6 +26,7 @@ impl SimpleComponent for WebWindow {
             set_default_height: 1000,
             set_default_width: 1000,
 
+            #[name(toast_overlay)]
             ToastOverlay {
                 Box {
                     set_orientation: Orientation::Vertical,
@@ -34,6 +36,7 @@ impl SimpleComponent for WebWindow {
                         set_vexpand: true,
                         load_uri: model.url.as_str(),
                         // connect_create => WebWindowInput::NewSmallWindow,
+                        // connect_insecure_content_detected => WebWindowInput::WarnInsecure,
                     }
                 }
             },
@@ -54,7 +57,10 @@ impl SimpleComponent for WebWindow {
 
     // fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
     //     match message {
-    //         WebWindowInput::NewSmallWindow => println!("New small window requested."),
+    //         WebWindowInput::WarnInsecure => {
+    //             let new_toast = Toast::new("This website is insecure");
+    //             self.widgets().toast_overlay.add_toast(new_toast);
+    //         }
     //     }
     // }
 

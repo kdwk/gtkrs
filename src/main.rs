@@ -6,7 +6,7 @@ use relm4::{prelude::{*, FactoryComponent}, factory::FactoryVecDeque};
 use relm4_macros::*;
 use webkit6::{WebView, prelude::*};
 use gtkrs::webwindow::{WebWindow};
-use std::collections::HashSet;
+use url::{Url};
 
 struct WebWindowControlBar {
     id: DynamicIndex,
@@ -26,7 +26,7 @@ enum WebWindowControlBarInput {
 
 #[derive(Debug)]
 enum WebWindowControlBarOutput {
-    RemoveMePlease(DynamicIndex), // pass the id
+    Remove(DynamicIndex), // pass the id
 }
 
 #[relm4::factory]
@@ -49,6 +49,7 @@ impl FactoryComponent for WebWindowControlBar {
             Button {
                 add_css_class: "circular",
                 set_icon_name: "left",
+                set_tooltip_text: Some("Back"),
                 connect_clicked => WebWindowControlBarInput::Back,
             },
 
@@ -56,6 +57,7 @@ impl FactoryComponent for WebWindowControlBar {
             Button {
                 add_css_class: "circular",
                 set_icon_name: "right",
+                set_tooltip_text: Some("Forward"),
                 connect_clicked => WebWindowControlBarInput::Forward,
             },
 
@@ -63,6 +65,7 @@ impl FactoryComponent for WebWindowControlBar {
             Button {
                 add_css_class: "circular",
                 set_icon_name: "refresh",
+                set_tooltip_text: Some("Refresh"),
                 connect_clicked => WebWindowControlBarInput::Refresh,
             },
 
@@ -76,6 +79,7 @@ impl FactoryComponent for WebWindowControlBar {
                 add_css_class: "circular",
                 add_css_class: "toolbar-button",
                 set_icon_name: "cross",
+                set_tooltip_text: Some("Close"),
                 connect_clicked => WebWindowControlBarInput::Close,
             }
         }
@@ -85,7 +89,7 @@ impl FactoryComponent for WebWindowControlBar {
         match message {
             WebWindowControlBarInput::Close => {
                 self.webwindow.widgets().web_window.destroy();
-                sender.output(WebWindowControlBarOutput::RemoveMePlease(self.id.clone()));
+                sender.output(WebWindowControlBarOutput::Remove(self.id.clone()));
             },
             WebWindowControlBarInput::Back => self.webwindow.widgets().web_view.go_back(),
             WebWindowControlBarInput::Forward => self.webwindow.widgets().web_view.go_forward(),
@@ -99,7 +103,7 @@ impl FactoryComponent for WebWindowControlBar {
 
     fn forward_to_parent(_output: Self::Output) -> Option<Self::ParentInput> {
         Some( match _output {
-            WebWindowControlBarOutput::RemoveMePlease(id) => AppInput::RemoveWebWindowControlBar(id)
+            WebWindowControlBarOutput::Remove(id) => AppInput::RemoveWebWindowControlBar(id)
         })
     }
 }
@@ -151,6 +155,7 @@ impl SimpleComponent for App {
                         set_margin_all: 5,
                         set_halign: Align::Fill,
 
+                        #[name(url_entry)]
                         Entry {
                             set_hexpand: true,
                             set_halign: Align::Fill,
@@ -161,11 +166,13 @@ impl SimpleComponent for App {
                             set_input_purpose: InputPurpose::Url,
                             set_input_hints: InputHints::NO_SPELLCHECK,
                         },
-        
+
+                        #[name(add_btn)]
                         Button {
                             set_margin_all: 5,
                             set_halign: Align::End,
                             set_icon_name: "plus",
+                            set_tooltip_text: Some("New Window"),
                             connect_clicked => AppInput::NewWebWindow,
                         }
                     },
@@ -204,17 +211,45 @@ impl SimpleComponent for App {
     }
 
     fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
+        let url_processed_result = process_url(String::from(self.url_entry_buffer.text()));
+        match url_processed_result {
+            Ok(url) => {
+                self.widgets().url_entry.set_css_classes("success");
+                self.widgets().add_btn.set_sensitive(true);
+            },
+            Err(()) => {
+                self.widgets().url_entry.set_css_classes("error");
+                self.widgets().add_btn.set_sensitive(false);
+            }
+        };
         match message {
             AppInput::NewWebWindow => {
-                let url = String::from(self.url_entry_buffer.text());
-                let new_webwindow = WebWindow::builder().launch(url.clone()).detach();
-                self.webwindowcontrolbars.guard().push_back((url, new_webwindow));
-                self.url_entry_buffer = EntryBuffer::default();
+                let final_url_option = url_processed_result.ok();
+                match final_url_option {
+                    Some(final_url) => {
+                        let new_webwindow = WebWindow::builder().launch(final_url.clone()).detach();
+                        self.webwindowcontrolbars.guard().push_back((final_url, new_webwindow));
+                        self.url_entry_buffer = EntryBuffer::default();
+                    },
+                    None => {},
+                }
             },
 
             AppInput::RemoveWebWindowControlBar(id) => {
                 self.webwindowcontrolbars.guard().remove(id.current_index());
             }
+        }
+    }
+}
+
+fn process_url (url: String) -> Result<String, ()> {
+    let result = Url::parse(url.as_str());
+    match result {
+        Ok(final_url) => {
+            Ok(final_url.into_string())
+        },
+        Err(error) => {
+            Err(())
         }
     }
 }
