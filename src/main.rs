@@ -270,7 +270,7 @@ impl SimpleComponent for App {
 }
 
 fn process_url (mut url: String) -> Result<String, ()> {
-    if url.contains(" ") {
+    if (url.contains(" ") || !url.ends_with(".*")) {
         url = String::from(url.trim());
         url = url.replace(" ", "+");
         let mut search = String::from("https://duckduckgo.com/?q=");
