@@ -254,7 +254,7 @@ impl SimpleComponent for App {
                 let final_url_option = url_processed_result.ok();
                 match final_url_option {
                     Some(final_url) => {
-                        self.webwindowcontrolbars.guard().push_back((final_url));
+                        self.webwindowcontrolbars.guard().push_back(final_url);
                         self.url_entry_buffer = EntryBuffer::default();
                         self.entry_is_valid = None;
                     },
@@ -270,7 +270,7 @@ impl SimpleComponent for App {
 }
 
 fn process_url (mut url: String) -> Result<String, ()> {
-    if (url.contains(" ") || !url.ends_with(".*")) {
+    if url.contains(" ") {
         url = String::from(url.trim());
         url = url.replace(" ", "+");
         let mut search = String::from("https://duckduckgo.com/?q=");
