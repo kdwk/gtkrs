@@ -22,6 +22,7 @@ enum WebWindowControlBarInput {
     Forward,
     Close,
     Refresh,
+    Focus
 }
 
 #[derive(Debug)]
@@ -74,6 +75,14 @@ impl FactoryComponent for WebWindowControlBar {
                 set_halign: Align::Start,
                 set_label: &self.url,
             },
+            
+            Button {
+                add_css_class: "circular",
+                add_css_class: "toolbar-button",
+                set_icon_name: "multitasking-windows",
+                set_tooltip_text: Some("Focus"),
+                connect_clicked => WebWindowControlBarInput::Focus,
+            },
 
             Button {
                 add_css_class: "circular",
@@ -94,6 +103,7 @@ impl FactoryComponent for WebWindowControlBar {
             WebWindowControlBarInput::Back => self.webwindow.widgets().web_view.go_back(),
             WebWindowControlBarInput::Forward => self.webwindow.widgets().web_view.go_forward(),
             WebWindowControlBarInput::Refresh => self.webwindow.widgets().web_view.reload(),
+            WebWindowControlBarInput::Focus => self.webwindow.widgets().web_window.present(),
         }
     }
 
@@ -115,10 +125,12 @@ impl FactoryComponent for WebWindowControlBar {
 struct App {
     url_entry_buffer: EntryBuffer,
     webwindowcontrolbars: FactoryVecDeque<WebWindowControlBar>,
+    entry_is_valid: Option<bool>,
 }
 
 #[derive(Debug)]
 enum AppInput {
+    EntryChanged,
     NewWebWindow, // Also handles adding a WebWindowControlBar
     RemoveWebWindowControlBar(DynamicIndex),
 }
@@ -132,7 +144,7 @@ impl SimpleComponent for App {
     view! {
         Window {
             set_default_height: 500,
-            set_default_width: 350,
+            set_default_width: 400,
             set_title: Some(""),
             add_css_class: "devel",
 
@@ -162,9 +174,15 @@ impl SimpleComponent for App {
                             set_margin_all: 5,
                             #[watch]
                             set_buffer: &model.url_entry_buffer,
-                            set_placeholder_text: Some("https://gnome.org"),
+                            #[watch]
+                            set_css_classes: match model.entry_is_valid {
+                                Some(is_valid) => if is_valid {&["success"]} else {&["error"]},
+                                None => &[""],
+                            },
+                            set_placeholder_text: Some("Search the web or enter link"),
                             set_input_purpose: InputPurpose::Url,
                             set_input_hints: InputHints::NO_SPELLCHECK,
+                            // connect_changed => AppInput::EntryChanged,
                         },
 
                         #[name(add_btn)]
@@ -204,32 +222,34 @@ impl SimpleComponent for App {
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
         let webwindowcontrolbars = FactoryVecDeque::new(gtk::Box::default(), sender.input_sender());
-        let model = App { webwindowcontrolbars: webwindowcontrolbars, url_entry_buffer: EntryBuffer::default() };
+        let model = App { webwindowcontrolbars: webwindowcontrolbars, url_entry_buffer: EntryBuffer::default(), entry_is_valid: None };
         let webwindowcontrolbar_box = model.webwindowcontrolbars.widget();
         let widgets = view_output!();
         ComponentParts { model: model, widgets: widgets }
     }
 
     fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
-        let url_processed_result = process_url(String::from(self.url_entry_buffer.text()));
-        match url_processed_result {
-            Ok(url) => {
-                self.widgets().url_entry.set_css_classes("success");
-                self.widgets().add_btn.set_sensitive(true);
-            },
-            Err(()) => {
-                self.widgets().url_entry.set_css_classes("error");
-                self.widgets().add_btn.set_sensitive(false);
-            }
-        };
         match message {
+            AppInput::EntryChanged => {
+                if !self.url_entry_buffer.text().is_empty() {
+                    let url_processed_result = process_url(String::from(self.url_entry_buffer.text()));
+                    match url_processed_result {
+                        Ok(_) => self.entry_is_valid = Some(true),
+                        Err(_) => self.entry_is_valid = Some(false),
+                    }
+                } else {
+                    self.entry_is_valid = None;
+                }
+            }
             AppInput::NewWebWindow => {
+                let url_processed_result = process_url(String::from(self.url_entry_buffer.text()));
                 let final_url_option = url_processed_result.ok();
                 match final_url_option {
                     Some(final_url) => {
                         let new_webwindow = WebWindow::builder().launch(final_url.clone()).detach();
                         self.webwindowcontrolbars.guard().push_back((final_url, new_webwindow));
                         self.url_entry_buffer = EntryBuffer::default();
+                        self.entry_is_valid = None;
                     },
                     None => {},
                 }
@@ -242,7 +262,16 @@ impl SimpleComponent for App {
     }
 }
 
-fn process_url (url: String) -> Result<String, ()> {
+fn process_url (mut url: String) -> Result<String, ()> {
+    if url.contains(" ") {
+        url = String::from(url.trim());
+        url = url.replace(" ", "+");
+        let mut search = String::from("https://duckduckgo.com/?q=");
+        search.push_str(url.as_str());
+        url = search;
+    } else if !(url.starts_with("http://") || url.starts_with("https://")) {
+        url = String::from("https://") + url.as_str();
+    }
     let result = Url::parse(url.as_str());
     match result {
         Ok(final_url) => {
