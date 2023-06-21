@@ -5,7 +5,7 @@ use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack, Status
 use relm4::{prelude::{*, FactoryComponent}, factory::FactoryVecDeque};
 use relm4_macros::*;
 use webkit6::{WebView, prelude::*};
-use gtkrs::webwindow::{WebWindow};
+use gtkrs::webwindow::{WebWindow, WebWindowOutput};
 use url::{Url};
 
 struct WebWindowControlBar {
@@ -14,7 +14,7 @@ struct WebWindowControlBar {
     webwindow: Controller<WebWindow>
 }
 
-type WebWindowControlBarInit = (String, Controller<WebWindow>);
+type WebWindowControlBarInit = String;
 
 #[derive(Debug)]
 enum WebWindowControlBarInput {
@@ -108,7 +108,10 @@ impl FactoryComponent for WebWindowControlBar {
     }
 
     fn init_model(init: Self::Init, index: &Self::Index, sender: FactorySender<Self>) -> Self {
-        Self { id: index.clone(), url: init.0, webwindow: init.1 }
+        let new_webwindow = WebWindow::builder().launch(init.clone()).forward(sender.input_sender(), |message| match message {
+            WebWindowOutput::Close => WebWindowControlBarInput::Close,
+        });
+        Self { id: index.clone(), url: init, webwindow: new_webwindow }
     }
 
     fn forward_to_parent(_output: Self::Output) -> Option<Self::ParentInput> {
@@ -146,6 +149,11 @@ impl SimpleComponent for App {
             set_default_height: 500,
             set_default_width: 400,
             set_title: Some(""),
+            // add_css_class?: if PROFILE == "Devel" {
+            //     Some("devel")
+            // } else {
+            //     None
+            // },
             add_css_class: "devel",
 
             Box {
@@ -246,8 +254,7 @@ impl SimpleComponent for App {
                 let final_url_option = url_processed_result.ok();
                 match final_url_option {
                     Some(final_url) => {
-                        let new_webwindow = WebWindow::builder().launch(final_url.clone()).detach();
-                        self.webwindowcontrolbars.guard().push_back((final_url, new_webwindow));
+                        self.webwindowcontrolbars.guard().push_back((final_url));
                         self.url_entry_buffer = EntryBuffer::default();
                         self.entry_is_valid = None;
                     },

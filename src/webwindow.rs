@@ -9,16 +9,21 @@ pub struct WebWindow {
 }
 
 #[derive(Debug)]
-enum WebWindowInput {
+pub enum WebWindowInput {
     // NewSmallWindow,
-    WarnInsecure,
+    // WarnInsecure,
+}
+
+#[derive(Debug)]
+pub enum WebWindowOutput {
+    Close,
 }
 
 #[relm4::component(pub)]
 impl SimpleComponent for WebWindow {
     type Init = String;
-    type Input = ();
-    type Output = ();
+    type Input = WebWindowInput;
+    type Output = WebWindowOutput;
 
     view! {
         #[name(web_window)]
@@ -41,6 +46,11 @@ impl SimpleComponent for WebWindow {
                 }
             },
 
+            connect_close_request[sender] => move |_| {
+                sender.output(WebWindowOutput::Close);
+                gtk::Inhibit(true)
+            } ,
+
             present: (),
         }
     }
@@ -57,9 +67,8 @@ impl SimpleComponent for WebWindow {
 
     // fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
     //     match message {
-    //         WebWindowInput::WarnInsecure => {
-    //             let new_toast = Toast::new("This website is insecure");
-    //             self.widgets().toast_overlay.add_toast(new_toast);
+    //         WebWindowInput::Close => {
+    //             todo!() // TODO: NEED TO MESSAGE WEBWINDOWCONTROLBAR
     //         }
     //     }
     // }
