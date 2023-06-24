@@ -194,7 +194,7 @@ impl SimpleComponent for App {
                                 Some(is_valid) => if is_valid {&["success"]} else {&["error"]},
                                 None => &[""],
                             },
-                            set_placeholder_text: Some("Search the web or enter link"),
+                            set_placeholder_text: Some("Search the web or enter a link"),
                             set_input_purpose: InputPurpose::Url,
                             set_input_hints: InputHints::NO_SPELLCHECK,
                             // connect_changed => AppInput::EntryChanged,
