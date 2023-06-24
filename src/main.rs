@@ -104,7 +104,7 @@ impl FactoryComponent for WebWindowControlBar {
     fn update(&mut self, message: Self::Input, sender: FactorySender<Self>) {
         match message {
             WebWindowControlBarInput::Close => {
-                self.webwindow.widgets().web_window.close();
+                self.webwindow.widgets().web_window.destroy();
                 sender.output(WebWindowControlBarOutput::Remove(self.id.clone()));
             },
             WebWindowControlBarInput::Back => self.webwindow.widgets().web_view.go_back(),
