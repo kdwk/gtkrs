@@ -214,7 +214,7 @@ impl SimpleComponent for App {
 
                     ScrolledWindow {
                         set_vexpand: true,
-                        
+
                         Box {
                             set_orientation: Orientation::Horizontal,
                             set_hexpand: true,
@@ -232,23 +232,6 @@ impl SimpleComponent for App {
     
                         }
                     }
-                    
-                    // Box {
-                    //     set_orientation: Orientation::Horizontal,
-                    //     set_hexpand: true,
-                    //     set_halign: Align::Fill,
-
-                    //     Box {
-                    //         set_orientation: Orientation::Vertical,
-
-                    //         #[local_ref]
-                    //         webwindowcontrolbar_box -> Box {
-                    //             set_orientation: Orientation::Vertical,
-                    //             set_spacing: 0,
-                    //         }
-                    //     }
-
-                    // }
                 }
             }
         }
