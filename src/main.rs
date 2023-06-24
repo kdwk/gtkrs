@@ -43,12 +43,13 @@ impl FactoryComponent for WebWindowControlBar {
     view! {
         Box {
             set_orientation: Orientation::Horizontal,
-            set_spacing: 5,
+            set_spacing: 0,
             set_margin_all: 5,
             
             #[name(back_btn)]
             Button {
                 add_css_class: "circular",
+                add_css_class: "flat",
                 set_icon_name: "left",
                 set_tooltip_text: Some("Back"),
                 connect_clicked => WebWindowControlBarInput::Back,
@@ -57,6 +58,7 @@ impl FactoryComponent for WebWindowControlBar {
             #[name(forward_btn)]
             Button {
                 add_css_class: "circular",
+                add_css_class: "flat",
                 set_icon_name: "right",
                 set_tooltip_text: Some("Forward"),
                 connect_clicked => WebWindowControlBarInput::Forward,
@@ -65,6 +67,7 @@ impl FactoryComponent for WebWindowControlBar {
             #[name(refresh_btn)]
             Button {
                 add_css_class: "circular",
+                add_css_class: "flat",
                 set_icon_name: "refresh",
                 set_tooltip_text: Some("Refresh"),
                 connect_clicked => WebWindowControlBarInput::Refresh,
@@ -73,11 +76,14 @@ impl FactoryComponent for WebWindowControlBar {
             Label {
                 set_hexpand: true,
                 set_halign: Align::Start,
+                set_margin_start: 5,
+                set_margin_end: 5,
                 set_label: &self.url,
             },
             
             Button {
                 add_css_class: "circular",
+                add_css_class: "flat",
                 add_css_class: "toolbar-button",
                 set_icon_name: "multitasking-windows",
                 set_tooltip_text: Some("Focus"),
@@ -86,6 +92,7 @@ impl FactoryComponent for WebWindowControlBar {
 
             Button {
                 add_css_class: "circular",
+                add_css_class: "flat",
                 add_css_class: "toolbar-button",
                 set_icon_name: "cross",
                 set_tooltip_text: Some("Close"),
