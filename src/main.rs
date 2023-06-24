@@ -7,6 +7,7 @@ use relm4_macros::*;
 use webkit6::{WebView, prelude::*};
 use gtkrs::webwindow::{WebWindow, WebWindowOutput};
 use url::{Url};
+use pango::EllipsizeMode;
 
 struct WebWindowControlBar {
     id: DynamicIndex,
@@ -78,6 +79,7 @@ impl FactoryComponent for WebWindowControlBar {
                 set_halign: Align::Start,
                 set_margin_start: 5,
                 set_margin_end: 5,
+                set_ellipsize: EllipsizeMode::End,
                 set_label: &self.url,
             },
             
@@ -209,23 +211,44 @@ impl SimpleComponent for App {
                             connect_clicked => AppInput::NewWebWindow,
                         }
                     },
-                    
-                    Box {
-                        set_orientation: Orientation::Horizontal,
-                        set_hexpand: true,
-                        set_halign: Align::Fill,
 
+                    ScrolledWindow {
+                        set_vexpand: true,
+                        
                         Box {
-                            set_orientation: Orientation::Vertical,
-
-                            #[local_ref]
-                            webwindowcontrolbar_box -> Box {
+                            set_orientation: Orientation::Horizontal,
+                            set_hexpand: true,
+                            set_halign: Align::Fill,
+    
+                            Box {
                                 set_orientation: Orientation::Vertical,
-                                set_spacing: 0,
+    
+                                #[local_ref]
+                                webwindowcontrolbar_box -> Box {
+                                    set_orientation: Orientation::Vertical,
+                                    set_spacing: 0,
+                                }
                             }
+    
                         }
-
                     }
+                    
+                    // Box {
+                    //     set_orientation: Orientation::Horizontal,
+                    //     set_hexpand: true,
+                    //     set_halign: Align::Fill,
+
+                    //     Box {
+                    //         set_orientation: Orientation::Vertical,
+
+                    //         #[local_ref]
+                    //         webwindowcontrolbar_box -> Box {
+                    //             set_orientation: Orientation::Vertical,
+                    //             set_spacing: 0,
+                    //         }
+                    //     }
+
+                    // }
                 }
             }
         }

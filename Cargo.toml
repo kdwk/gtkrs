@@ -10,6 +10,7 @@ relm4 = {version="0.6.0", features=["libadwaita", "gnome_44", "macros"]}
 relm4-components = "0.6.0"
 relm4-macros = "0.6.0"
 relm4-icons = {version="0.6.0", features=["plus","minus","up","down","top","rich-text","edit","share","cat-sleeping", "call-missed", "left", "right", "cross", "refresh","multitasking-windows"]}
+pango = "0.17.4"
 tracker = "0.2.1"
 rand = "0.8.5"
 ashpd = "0.4.0"
