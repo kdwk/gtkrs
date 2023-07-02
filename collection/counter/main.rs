@@ -1,6 +1,6 @@
-use gtk::prelude::{BoxExt, ButtonExt, GtkWindowExt, OrientableExt};
-use relm4::{gtk::{self, traits::WidgetExt}, ComponentParts, ComponentSender, RelmApp, RelmWidgetExt, SimpleComponent};
-use relm4::adw::{Application, ApplicationWindow, Window, ToastOverlay, Toast, HeaderBar};
+use relm4::prelude::*;
+use relm4::gtk::{prelude::*, Box, Label, Button, Orientation, Align};
+use relm4::adw::{prelude::*, Window, HeaderBar};
 
 #[derive(Debug)]
 enum AppInput {
@@ -22,39 +22,41 @@ impl SimpleComponent for AppModel {
     type Init = isize;
 
     view! {
-        ApplicationWindow {
+        Window {
             set_title: Some("Counter"),
             set_default_height: 200,
             set_default_width: 200,
 
-            gtk::Box {
-                set_orientation: gtk::Orientation::Vertical,
+            Box {
+                set_orientation: Orientation::Vertical,
+
                 HeaderBar {
                     add_css_class: "flat",
+                    set_decoration_layout: Some(":close"),
                 },
 
-                gtk::Box {
-                    set_orientation: gtk::Orientation::Vertical,
+                Box {
+                    set_orientation: Orientation::Vertical,
                     set_spacing: 10,
                     set_margin_all: 20,
 
-                    gtk::Label {
+                    Label {
                         #[watch]
                         set_label: &format!("{}", model.counter)
                     },
     
-                    gtk::Box {
-                        set_orientation: gtk::Orientation::Horizontal,
-                        set_halign: gtk::Align::Center,
+                    Box {
+                        set_orientation: Orientation::Horizontal,
+                        set_halign: Align::Center,
                         set_spacing: 5,
                         set_margin_all: 5,
     
-                        gtk::Button {
+                        Button {
                             add_css_class: "circular",
                             set_icon_name: "list-add-symbolic",
                             connect_clicked => AppInput::Increment
                         },
-                        gtk::Button {
+                        Button {
                             add_css_class: "circular",
                             set_icon_name: "list-remove-symbolic",
                             connect_clicked => AppInput::Decrement
