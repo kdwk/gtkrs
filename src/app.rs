@@ -33,7 +33,7 @@ impl SimpleComponent for App {
                     set_halign: Align::Center,
 
                     Image {
-                        from_file: "data/turtlerock.jpg"
+                        set_from_file: Some("data/turtlerock.jpg")
                     }
                 },
 
