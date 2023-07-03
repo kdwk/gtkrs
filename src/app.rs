@@ -1,4 +1,4 @@
-use relm4::gtk::{prelude::*, Box, Label, Button, Orientation, Align, Image, Video};
+use relm4::gtk::{prelude::*, Box, Label, Button, Orientation, Align, Image, Video, IconSize};
 use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack, StatusPage};
 use relm4::prelude::*;
 use relm4_macros::*;
@@ -39,7 +39,7 @@ impl SimpleComponent for App {
                         set_halign: Align::Center,
     
                         Image {
-                            set_icon_size: 128,
+                            set_icon_size: IconSize::Large,
                             set_from_file: Some("data/turtlerock.jpg")
                         }
                     },
