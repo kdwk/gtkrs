@@ -2,7 +2,7 @@ use relm4::gtk::{prelude::*, Box, Label, Button, Orientation, Align, Image, Vide
 use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack, StatusPage};
 use relm4::prelude::*;
 use relm4_macros::*;
-use libshumate::{prelude::*, SimpleMap};
+use libshumate::{prelude::*, SimpleMap, RasterRenderer};
 
 pub struct App {
 
@@ -17,45 +17,55 @@ impl SimpleComponent for App {
     view! {
         Window {
             set_default_size: (500, 500),
-
-            HeaderBar {
-                add_css_class: "flat",
-                set_decoration_layout: Some("close:")
-            },
+            set_title: Some("Compare"),
 
             Box {
                 set_orientation: Orientation::Vertical,
 
-                SimpleMap {},
-
-                Box {
-                    set_orientation: Orientation::Horizontal,
-                    set_halign: Align::Center,
-
-                    Image {
-                        set_from_file: Some("data/turtlerock.jpg")
-                    }
+                HeaderBar {
+                    add_css_class: "flat",
+                    set_decoration_layout: Some("close:")
                 },
-
-                Label {
-                    add_css_class: "title-1",
-                    set_label: "Turtle Rock"
-                },
-
+    
                 Box {
-                    set_orientation: Orientation::Horizontal,
-
-                    Label {
-                        set_label: "Joshua Tree National Park",
+                    set_orientation: Orientation::Vertical,
+    
+                    SimpleMap {
+                        set_map_source: RasterRenderer::new(),
                     },
-
-                    Label {
-                        set_label: "",
-                        set_hexpand: true,
+    
+                    Box {
+                        set_orientation: Orientation::Horizontal,
+                        set_halign: Align::Center,
+    
+                        Image {
+                            set_icon_size: 128,
+                            set_from_file: Some("data/turtlerock.jpg")
+                        }
                     },
-
+    
                     Label {
-                        set_label: "California",
+                        set_halign: Align::Start,
+                        add_css_class: "title-1",
+                        set_label: "Turtle Rock"
+                    },
+    
+                    Box {
+                        set_orientation: Orientation::Horizontal,
+                        set_margin_all: 10,
+    
+                        Label {
+                            set_label: "Joshua Tree National Park",
+                        },
+    
+                        Label {
+                            set_label: "",
+                            set_hexpand: true,
+                        },
+    
+                        Label {
+                            set_label: "California",
+                        }
                     }
                 }
             }
