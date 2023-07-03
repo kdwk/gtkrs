@@ -4,11 +4,11 @@ use relm4::prelude::*;
 use relm4_macros::*;
 use libshumate::{prelude::*, SimpleMap};
 
-struct App {
+pub struct App {
 
 }
 
-#[relm4::component]
+#[relm4::component(pub)]
 impl SimpleComponent for App {
     type Init = ();
     type Input = ();
