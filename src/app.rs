@@ -1,60 +1,63 @@
-use relm4::gtk::{prelude::*, Box, Label, Button, Orientation, Align, Video};
+use relm4::gtk::{prelude::*, Box, Label, Button, Orientation, Align, Image, Video};
 use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack, StatusPage};
 use relm4::prelude::*;
 use relm4_macros::*;
+use libshumate::{prelude::*, SimpleMap};
 
-pub struct App {
-    label: String,
-    button_visible: bool,
+struct App {
+
 }
 
-#[derive(Debug)]
-pub enum AppInput {
-    ButtonClicked,
-}
-
-#[relm4::component(pub)]
+#[relm4::component]
 impl SimpleComponent for App {
     type Init = ();
-    type Input = AppInput;
+    type Input = ();
     type Output = ();
 
     view! {
         Window {
             set_default_size: (500, 500),
-            set_title: Some("Compare"),
+
+            HeaderBar {
+                add_css_class: "flat",
+                set_decoration_layout: Some("close:")
+            },
 
             Box {
                 set_orientation: Orientation::Vertical,
 
-                HeaderBar {
-                    add_css_class: "flat",
-                    set_decoration_layout: Some(":close"),
+                SimpleMap {},
+
+                Box {
+                    set_orientation: Orientation::Horizontal,
+                    set_halign: Align::Center,
+
+                    Image {
+                        from_file: "data/turtlerock.jpg"
+                    }
+                },
+
+                Label {
+                    add_css_class: "title-1",
+                    set_label: "Turtle Rock"
                 },
 
                 Box {
-                    set_orientation: Orientation::Vertical,
-                    set_vexpand: true,
-                    set_valign: Align::Center,
-    
+                    set_orientation: Orientation::Horizontal,
+
                     Label {
-                        add_css_class: "title-1",
-                        set_label: "+"
-                    },
-    
-                    Label {
-                        #[watch]
-                        set_label: &format!("{}", model.label),
+                        set_label: "Joshua Tree National Park",
                     },
 
-                    Button {
-                        set_label: "Show Label",
-                        set_hexpand: false,
-                        #[watch]
-                        set_visible: model.button_visible,
-                        connect_clicked => AppInput::ButtonClicked,
+                    Label {
+                        set_label: "",
+                        set_hexpand: true,
+                    },
+
+                    Label {
+                        set_label: "California",
                     }
-                }               
+                }
             }
         }
     }
@@ -64,17 +67,8 @@ impl SimpleComponent for App {
             root: &Self::Root,
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
-        let model = App { label: String::from(""), button_visible: true };
-        let widgets = view_output!();
-        ComponentParts { model: model, widgets: widgets }
-    }
-
-    fn update(&mut self, message: Self::Input, sender: ComponentSender<Self>) {
-        match message {
-            AppInput::ButtonClicked => {
-                self.button_visible = false;
-                self.label = String::from("Success");
-            }
-        }
+            let model = App {};
+            let widgets = view_output!();
+            ComponentParts { model: model, widgets: widgets }
     }
 }

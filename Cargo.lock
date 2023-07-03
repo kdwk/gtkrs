@@ -516,6 +516,7 @@ dependencies = [
 name = "gtkrs"
 version = "0.1.0"
 dependencies = [
+ "libshumate",
  "pango",
  "rand",
  "relm4",
@@ -644,6 +645,38 @@ name = "libc"
 version = "0.2.144"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b00cc1c228a6782d0f076e7b232802e0c5689d41bb5df366f2a6b6621cfdfe1"
+
+[[package]]
+name = "libshumate"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6f835052474118c10cfa5583e2d531a262ad7ea0909ae1a8a4e94b5d6d472078"
+dependencies = [
+ "gdk-pixbuf",
+ "gdk4",
+ "gio",
+ "glib",
+ "gtk4",
+ "libc",
+ "libshumate-sys",
+ "once_cell",
+]
+
+[[package]]
+name = "libshumate-sys"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "61ab625df72e11d45d52793e388b5052ab2af7945d8a4d469f427a568f9a29bb"
+dependencies = [
+ "gdk-pixbuf-sys",
+ "gdk4-sys",
+ "gio-sys",
+ "glib-sys",
+ "gobject-sys",
+ "gtk4-sys",
+ "libc",
+ "system-deps",
+]
 
 [[package]]
 name = "lock_api"
