@@ -2,10 +2,10 @@ use relm4::gtk::{prelude::*, Box, Label, Button, Orientation, Align, Image, Vide
 use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack, StatusPage};
 use relm4::prelude::*;
 use relm4_macros::*;
-use libshumate::{prelude::*, SimpleMap, RasterRenderer};
+use libshumate::{prelude::*, SimpleMap, RasterRenderer, MapSource, TileDownloader};
 
 pub struct App {
-
+    map_source: Option<MapSource>,
 }
 
 #[relm4::component(pub)]
@@ -31,7 +31,7 @@ impl SimpleComponent for App {
                     set_orientation: Orientation::Vertical,
     
                     SimpleMap {
-                        set_map_source: RasterRenderer::new(),
+                        set_map_source: model.map_source,
                     },
     
                     Box {
@@ -77,7 +77,7 @@ impl SimpleComponent for App {
             root: &Self::Root,
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
-            let model = App {};
+            let model = App {map_source: Some(RasterRenderer::from_url("https://tile.openstreetmap.org/#Z#/#X#/#Y#.png"))};
             let widgets = view_output!();
             ComponentParts { model: model, widgets: widgets }
     }
