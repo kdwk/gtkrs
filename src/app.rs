@@ -31,7 +31,7 @@ impl SimpleComponent for App {
                     set_orientation: Orientation::Vertical,
     
                     SimpleMap {
-                        set_map_source: model.map_source,
+                        set_map_source: model.map_source.as_ref(),
                     },
     
                     Box {
@@ -77,7 +77,7 @@ impl SimpleComponent for App {
             root: &Self::Root,
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
-            let model = App {map_source: Some(RasterRenderer::from_url("https://tile.openstreetmap.org/#Z#/#X#/#Y#.png"))};
+            let model = App {map_source: Some(RasterRenderer::from_url("https://tile.openstreetmap.org/#Z#/#X#/#Y#.png")).into()};
             let widgets = view_output!();
             ComponentParts { model: model, widgets: widgets }
     }
