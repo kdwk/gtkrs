@@ -1,4 +1,4 @@
-use relm4::gtk::{prelude::*, Box, Label, Button, Orientation, Align, Image, Video, IconSize};
+use relm4::gtk::{prelude::*, Box, Label, Button, Orientation, Align, Image, Video, IconSize, Picture};
 use relm4::adw::{prelude::*, Window, HeaderBar, MessageDialog, ViewStack, StatusPage};
 use relm4::prelude::*;
 use relm4_macros::*;
@@ -38,9 +38,8 @@ impl SimpleComponent for App {
                         set_orientation: Orientation::Horizontal,
                         set_halign: Align::Center,
     
-                        Image {
-                            set_icon_size: IconSize::Large,
-                            set_from_file: Some("data/turtlerock.jpg")
+                        Picture {
+                            set_file: Some("data/turtlerock.jpg")
                         }
                     },
     
@@ -77,7 +76,7 @@ impl SimpleComponent for App {
             root: &Self::Root,
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
-            let model = App {map_source: Some(RasterRenderer::from_url("https://tile.openstreetmap.org/#Z#/#X#/#Y#.png")).into()};
+            let model = App {map_source: Some(RasterRenderer::from_url("https://tile.openstreetmap.org/#Z#/#X#/#Y#.png"))};
             let widgets = view_output!();
             ComponentParts { model: model, widgets: widgets }
     }
