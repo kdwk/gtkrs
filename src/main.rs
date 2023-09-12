@@ -1,98 +1,43 @@
 use relm4::prelude::*;
-use relm4::gtk::{prelude::*, Box, Label, Button, Orientation::*, Align::*};
+use relm4::gtk::{prelude::*, Box, Orientation, Label, Button, Orientation::*, Align::*, GridView, SelectionModel, ListItemFactory, glib};
 use relm4::adw::{prelude::*, Window, HeaderBar};
-use AppInput::*;
 
-#[derive(Debug)]
-enum AppInput {
-    Increment,
-    Decrement,
-}
-
-struct AppModel {
-    counter: isize,
+struct App {
+    grid_view_model: Option<SelectionModel>,
+    grid_view_factory: Option<ListItemFactory>,
 }
 
 #[relm4::component]
-impl SimpleComponent for AppModel {
-    /// The type of the messages that this component can receive.
-    type Input = AppInput;
-    /// The type of the messages that this component can send.
+impl SimpleComponent for App {
+    type Init = ();
+    type Input = ();
     type Output = ();
-    /// The type of data with which this component will be initialized.
-    type Init = isize;
 
-    view! {
+    view!{
         Window {
-            set_title: Some("Counter"),
-            set_default_height: 155,
-            set_default_width: 200,
-
             Box {
-                set_orientation: Vertical,
-
-                HeaderBar {
-                    add_css_class: "flat",
-                    set_decoration_layout: Some(":close"),
-                },
-
-                Box {
-                    set_orientation: Vertical,
-                    set_spacing: 10,
-                    set_margin_all: 20,
-
-                    Label {
-                        #[watch]
-                        set_label: &format!("{}", model.counter),
-                        add_css_class: "title-1",
-                    },
-    
-                    Box {
-                        set_orientation: Horizontal,
-                        set_halign: Center,
-                        set_spacing: 5,
-                        set_margin_all: 5,
-    
-                        Button {
-                            add_css_class: "circular",
-                            set_icon_name: "list-add-symbolic",
-                            connect_clicked => Increment
-                        },
-                        Button {
-                            add_css_class: "circular",
-                            set_icon_name: "list-remove-symbolic",
-                            connect_clicked => Decrement
-                        }
-                    }
+                set_orientation: Orientation::Vertical,
+                HeaderBar {},
+                GridView::new(model.grid_view_model, model.grid_view_factory) {
+                    set_min_columns: 2,
                 }
             }
-
         }
     }
 
     fn init(
-            counter: Self::Init,
+            init: Self::Init,
             root: &Self::Root,
             sender: ComponentSender<Self>,
         ) -> ComponentParts<Self> {
-        let model = AppModel{counter};
+        let model = App {grid_view_model: Some(glib::Object::builder::<SelectionModel>().build()), grid_view_factory: Some(ListItemFactory)};
         let widgets = view_output!();
         ComponentParts { model: model, widgets: widgets }
     }
-
-    fn update(&mut self, message: Self::Input, _sender: ComponentSender<Self>) {
-        match message {
-            AppInput::Increment => {
-                self.counter += 1;
-            }
-            AppInput::Decrement => {
-                self.counter -= 1;
-            }
-        }
-    }
 }
 
-fn main() {
-    let app = RelmApp::new("Counter");
-    app.run::<AppModel>(0);
+fn main () {
+    let app = RelmApp::new("Grids");
+    relm4_icons::initialize_icons();
+    app.run::<App>(());
 }
